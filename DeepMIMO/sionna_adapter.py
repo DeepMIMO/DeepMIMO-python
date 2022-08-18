@@ -6,14 +6,14 @@ Created on Sat Jul 16 10:53:50 2022
 """
 import numpy as np
 
-# DeepMIMO generator for Sionna
+# The DeepMIMO dataset adapter for Sionna
 #
 # Input: DeepMIMO dataset, UE and BS indices to be included
 #
 # For a given 1D vector of BS or UE indices, the generated dataset will be stacked as different samples
 #
-# By default, the generator will only select the first BS of the DeepMIMO dataset and all UEs
-# The generator assumes BSs are transmitters and users are receivers. 
+# By default, the adapter will only select the first BS of the DeepMIMO dataset and all UEs
+# The adapter assumes BSs are transmitters and users are receivers. 
 # Uplink channels could be generated using (transpose) reciprocity.
 #
 # For multi-user channels, provide a 2D numpy matrix of size (num_samples x num_rx)
@@ -32,7 +32,7 @@ import numpy as np
 # by stacking the data of channels from the basestations (0 and 1), (2 and 3), 
 # and (4 and 5) to the UEs.
 #
-class DeepMIMOGenerator:
+class DeepMIMOSionnaAdapter:
     def __init__(self, DeepMIMO_dataset, bs_idx = None, ue_idx = None):
         self.dataset = DeepMIMO_dataset
         
