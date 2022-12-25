@@ -22,7 +22,7 @@ pprint(parameters, sort_dicts=False)
 
 # Scenario O1_60 extracted at the dataset_folder
 parameters['scenario'] = 'O1_60'
-parameters['dataset_folder'] = r'C:\Users\Umt\Desktop\scenarios'
+parameters['dataset_folder'] = r'.\scenarios'
 
 parameters['num_paths'] = 10
 
