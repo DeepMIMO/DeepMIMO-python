@@ -18,6 +18,8 @@ from DeepMIMO.utils import safe_print
 
 def generate_data(params):
     
+    np.random.seed(1001)
+    
     params = validate_params(params)
     
     # If dynamic scenario
@@ -165,16 +167,25 @@ def find_users_from_rows(params):
         subsampled = np.arange(len(vector))
         np.random.shuffle(subsampled)
         subsampled = vector[subsampled[:num_of_subsampled]]
+        subsampled = np.sort(subsampled)
         return subsampled
     
     def get_user_ids(row, grids):
         row_prev_ids = np.sum((row > grids[:, 1])*(grids[:, 1] - grids[:, 0] + 1)*grids[:, 2])
         row_cur_ind = (grids[:, 1] >= row) * (row >= grids[:, 0])
-        row_curr_ids = ((row - grids[:, 0])*grids[:, 2])[row_cur_ind]
-        user_ids = row_prev_ids + row_curr_ids + np.arange(grids[:, 2][row_cur_ind])
+        row_cur_start = row - grids[row_cur_ind, 0][0]
+        users_in_row = grids[:, 2][row_cur_ind][0]
+
+        # column-oriented grid
+        if grids.shape[1] == 4 and grids[row_cur_ind, 3][0]: 
+            users_in_col = (grids[:, 1]-grids[:, 0]+1)[row_cur_ind][0]
+            user_ids = row_prev_ids + row_cur_start + np.arange(0, users_in_col*users_in_row, users_in_col)
+        # row-oriented grid
+        else: 
+            row_curr_ids = row_cur_start * users_in_row
+            user_ids = row_prev_ids + row_curr_ids + np.arange(users_in_row)
+            
         return user_ids
-    
-    np.random.seed(1001)
     
     grids = params[c.PARAMSET_SCENARIO_PARAMS][c.PARAMSET_SCENARIO_PARAMS_USER_GRIDS]
     rows = np.arange(params[c.PARAMSET_USER_ROW_FIRST], params[c.PARAMSET_USER_ROW_LAST]+1)
@@ -186,5 +197,4 @@ def find_users_from_rows(params):
         user_ids_row = rand_perm_per(user_ids_row, params[c.PARAMSET_USER_SUBSAMP])
         user_ids = np.concatenate((user_ids, user_ids_row))
     
-    user_ids = np.sort(user_ids)
     return user_ids
