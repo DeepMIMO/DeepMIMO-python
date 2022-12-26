@@ -52,12 +52,12 @@ def extract_data_from_ray(ray_data, ids, params):
                  c.OUT_PATH_RX_POW: [],
                  c.OUT_PATH_ACTIVE: []
                  }
-    data = {c.OUT_PATH: [dict(path_dict) for j in range(len(ids))],
-                c.OUT_LOS : np.zeros(num_channels, dtype=int),
-                c.OUT_LOC : np.zeros((num_channels, 3)),
-                c.OUT_DIST : np.zeros(num_channels),
-                c.OUT_PL : np.zeros(num_channels)
-                }
+    data = {c.OUT_PATH: np.array([dict(path_dict) for j in range(len(ids))]),
+            c.OUT_LOS : np.zeros(num_channels, dtype=int),
+            c.OUT_LOC : np.zeros((num_channels, 3)),
+            c.OUT_DIST : np.zeros(num_channels),
+            c.OUT_PL : np.zeros(num_channels)
+            }
     
     j = 0
     for user in tqdm(range(max(ids)+1), desc='Reading ray-tracing'):
@@ -85,6 +85,13 @@ def extract_data_from_ray(ray_data, ids, params):
         pointer += num_paths_available*4
         
     path_verifier.notify()
+    
+    # The reading operation of the raytracing is linear
+    # Therefore, it is re-ordered to return in the same order of user IDs
+    rev_argsort = np.empty(ids.shape, dtype=np.intp)
+    rev_argsort[np.argsort(ids)] = np.arange(len(ids))
+    for dict_key in data.keys():
+        data[dict_key] = data[dict_key][rev_argsort]
     return data
 
 # Split variables into a dictionary
