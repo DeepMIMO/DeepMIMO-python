@@ -1,0 +1,6 @@
+build/*
+dist/*
+src/*.egg-info/*
+*.pyc
+/raytracing_scenarios
+/.ipynb_checkpoints
