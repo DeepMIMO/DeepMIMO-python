@@ -10,6 +10,7 @@ Date: 12/10/2021
 
 import time
 import DeepMIMOv3.consts as c
+from DeepMIMOv3.construct_deepmimo import ant_indices, array_response
 import numpy as np
 
 # Sleep between print and tqdm displays
@@ -49,3 +50,10 @@ class PathVerifier:
             
 def dbm2pow(val):
     return 10**(val/10 - 3)
+
+def steering_vec(array, phi=0, theta=0, kd=np.pi):
+    # phi = azimuth
+    # theta = elevation
+    idxs = ant_indices(array)
+    resp = array_response(idxs, phi, theta+np.pi/2, kd)
+    return resp / np.linalg.norm(resp)

@@ -24,7 +24,9 @@ Created on Sun Mar 17 00:26:51 2024
 
 # DeepMIMOv3 (and install through pip if not available) 
 import DeepMIMOv3 as DeepMIMOv3
-    
+from DeepMIMOv3.visualization import plot_LoS_status, plot_coverage
+from DeepMIMOv3.utils import steering_vec
+
 # Numpy and Matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
@@ -36,6 +38,8 @@ parameters = DeepMIMOv3.default_params()
 
 # Print the default parameters
 pprint(parameters)
+
+# %%
 
 # %% [markdown]
 # A brief summary for the parameters ([For the detailed descriptions, please go to the version page]()):
@@ -77,6 +81,7 @@ pprint(parameters)
 # We set these parameters accordingly:
 
 # %%
+parameters['dataset_folder'] = r'C:\Users\Umt\Desktop\deepverse_scenarios'
 parameters['scenario'] = 'city_4_phoenix'
 # parameters['dynamic_scenario_scenes'] = np.arange(475, 476)
 
@@ -113,30 +118,9 @@ dataset = DeepMIMOv3.generate_data(parameters)
 # %% [markdown]
 # Next, we visualize the LoS status (if the channel has -1: no path, 0: pnly NLoS paths, 1: LoS path) of the user channels. For this purpose, we need the LoS status of the user channels and position. From the output section of [the DeepMIMOv3-python page](https://www.deepmimo.net/versions/deepmimo-v3-python/), we check the commands needed to access these parameters, and collect them in new variables for plotting.
 
-# %%
-def plot_LoS_status(bs_location, user_locations, user_LoS, bs_title_idx=-1):
-    LoS_map = {-1: ('r', 'No Path'), 0: ('b', 'NLoS'), 1: ('g', 'LoS')}
-    
-    plt.figure()
-    for unique_LoS_status in LoS_map.keys():
-    # Plot different status one by one to assign legend labels
-        users_w_key = user_LoS==unique_LoS_status
-        plt.scatter(user_locations[users_w_key, 0], 
-                    user_locations[users_w_key, 1], 
-                    c=LoS_map[unique_LoS_status][0], 
-                    label=LoS_map[unique_LoS_status][1], s=2)
-    plt.scatter(bs_location[0], bs_location[1], 
-                c='k', marker='x', 
-                label='Basestation')
-    plt.xlabel('x (m)')
-    plt.ylabel('y (m)')
-    plt.title('BS %i - LoS status of users'%(bs_title_idx))
-    plt.legend(framealpha=.9, loc='lower left')
-    plt.xlim([user_locations[:, 0].min(), user_locations[:, 0].max()])
-    plt.ylim([user_locations[:, 1].min(), user_locations[:, 1].max()])
 
-for bs_idx in [0, 1, 2]:
-    bs_location = dataset[bs_idx]['location'][0]
+for bs_idx in range(len(dataset)):
+    bs_location = dataset[bs_idx]['location']
     LoS_status = dataset[bs_idx]['user']['LoS']
     user_location = dataset[bs_idx]['user']['location']
     plot_LoS_status(bs_location, user_location, LoS_status, bs_title_idx=bs_idx+1)
@@ -149,7 +133,7 @@ bs_idx = 1
 LoS_status = dataset[bs_idx]['user']['LoS']
 selected_users = LoS_status == 1
 
-bs_location = dataset[bs_idx]['location'][0]
+bs_location = dataset[bs_idx]['location']
 LoS_status = dataset[bs_idx]['user']['LoS'][selected_users]
 user_locations = dataset[bs_idx]['user']['location'][selected_users]
 plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=bs_idx+1)
@@ -181,7 +165,7 @@ parameters['bs_antenna']['FoV'] = np.array([180, 180])
 parameters['bs_antenna']['rotation'] = np.array([0, 0, 0]) # +x rotation
 dataset = DeepMIMOv3.generate_data(parameters.copy())
 
-bs_location = dataset[0]['location'][0]
+bs_location = dataset[0]['location']
 LoS_status = dataset[0]['user']['LoS']
 user_locations = dataset[0]['user']['location']
 plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
@@ -193,7 +177,7 @@ plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
 parameters['bs_antenna']['rotation'] = np.array([0, 0, 90]) # let's rotate it to +y
 dataset = DeepMIMOv3.generate_data(parameters.copy())
 
-bs_location = dataset[0]['location'][0]
+bs_location = dataset[0]['location']
 LoS_status = dataset[0]['user']['LoS']
 user_locations = dataset[0]['user']['location']
 plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
@@ -202,7 +186,7 @@ plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
 parameters['bs_antenna']['rotation'] = np.array([0, 0, 180]) # let's rotate it to +y
 dataset = DeepMIMOv3.generate_data(parameters.copy())
 
-bs_location = dataset[0]['location'][0]
+bs_location = dataset[0]['location']
 LoS_status = dataset[0]['user']['LoS']
 user_locations = dataset[0]['user']['location']
 plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
@@ -212,7 +196,7 @@ parameters['bs_antenna']['FoV'] = np.array([120, 120])
 parameters['bs_antenna']['rotation'] = np.array([0, 0, 180]) # let's rotate it to +y
 dataset = DeepMIMOv3.generate_data(parameters.copy())
 
-bs_location = dataset[0]['location'][0]
+bs_location = dataset[0]['location']
 LoS_status = dataset[0]['user']['LoS']
 user_locations = dataset[0]['user']['location']
 plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
@@ -221,7 +205,7 @@ plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
 parameters['bs_antenna']['rotation'] = np.array([0, 0, -90]) # let's rotate it to +y
 dataset = DeepMIMOv3.generate_data(parameters.copy())
 
-bs_location = dataset[0]['location'][0]
+bs_location = dataset[0]['location']
 LoS_status = dataset[0]['user']['LoS']
 user_locations = dataset[0]['user']['location']
 plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
@@ -229,7 +213,7 @@ plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
 parameters['bs_antenna']['rotation'] = np.array([0, 20, -90]) # let's rotate it to +y
 dataset = DeepMIMOv3.generate_data(parameters.copy())
 
-bs_location = dataset[0]['location'][0]
+bs_location = dataset[0]['location']
 LoS_status = dataset[0]['user']['LoS']
 user_locations = dataset[0]['user']['location']
 plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
