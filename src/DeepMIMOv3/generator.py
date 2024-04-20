@@ -14,6 +14,7 @@ import numpy as np
 import DeepMIMOv3.consts as c
 from DeepMIMOv3.construct_deepmimo import generate_MIMO_channel, generate_MIMO_channel_rx_ind
 from DeepMIMOv3.utils import safe_print
+from DeepMIMOv3.params import default_params
 
 
 def generate_data(params):
@@ -95,8 +96,14 @@ def generate_scene_data(params):
                     dataset[i][c.DICT_BS_IDX][c.OUT_CHANNEL], dataset[i][c.DICT_BS_IDX][c.OUT_LOS] = np.stack(dataset[i][c.DICT_BS_IDX][c.OUT_CHANNEL], axis=0)
     return dataset
 
+# TODO: Move validation into another script
 def validate_params(params):
 
+    # TODO: Show parameters that are not used in the generation - This allows 
+    # additional_keys = compare_two_params(params, default_params)
+    # print('Following parameters seems unnecessary:')
+    # print(additional_keys)
+    
     params['dynamic_scenario'] = is_dynamic_scenario(params)
     if params['dynamic_scenario']:
         params['user_rows'] = np.array([0])
@@ -250,3 +257,14 @@ def get_scenario_params_path(params):
         raise NotImplementedError
         
     return params_path
+
+def compare_two_params(params, default_params):
+    
+    additional_keys = params.keys() - default_params.keys()
+    for key, item in params.items():
+        if isinstance(item, dict):
+            if key in default_params:
+                additional_keys += compare_two_params(params[key], default_params[key])
+
+    return additional_keys
+
