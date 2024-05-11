@@ -1,26 +1,38 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-def plot_LoS_status(bs_location, user_locations, user_LoS, bs_title_idx=-1):
+
+def plot_LoS_status(bs_location, user_locations, user_LoS, scat_size='auto'):
     LoS_map = {-1: ('r', 'No Path'), 0: ('b', 'NLoS'), 1: ('g', 'LoS')}
     
-    plt.figure()
+    plt.figure(dpi=300)
+    
+    # Calculate scatter size based on point density
+    if scat_size == 'auto':
+        n_points = user_locations.shape[0]
+        area = np.prod(np.max(user_locations, axis=0)[:2] - 
+                        np.min(user_locations, axis=0)[:2])
+        point_density = n_points / area
+        scat_size = 1 / (100 * point_density)
+    
     for unique_LoS_status in LoS_map.keys():
     # Plot different status one by one to assign legend labels
         users_w_key = user_LoS==unique_LoS_status
         plt.scatter(user_locations[users_w_key, 0], 
                     user_locations[users_w_key, 1], 
                     c=LoS_map[unique_LoS_status][0], 
-                    label=LoS_map[unique_LoS_status][1], s=2)
+                    label=LoS_map[unique_LoS_status][1], s=scat_size)
     plt.scatter(bs_location[0], bs_location[1], 
-                c='k', marker='x', 
-                label='Basestation')
+                c='k', marker='x', label='Basestation')
     plt.xlabel('x (m)')
     plt.ylabel('y (m)')
-    plt.title('BS %i - LoS status of users'%(bs_title_idx))
-    plt.legend(framealpha=.9, loc='lower left')
+    lgd = plt.legend(framealpha=.9, loc='lower left')
+    lgd.legend_handles[0]._sizes = [20]
+    lgd.legend_handles[1]._sizes = [20]
+    lgd.legend_handles[2]._sizes = [20]
     plt.xlim([user_locations[:, 0].min(), user_locations[:, 0].max()])
     plt.ylim([user_locations[:, 1].min(), user_locations[:, 1].max()])
+
 
 def plot_coverage(rxs, cov_map, dpi=200, figsize=(6,4), cbar_title=None, title=False,
                   scat_sz=.5, tx_pos=None, tx_ori=None, legend=False, lims=None,
