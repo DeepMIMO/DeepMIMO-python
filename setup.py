@@ -1,6 +1,6 @@
 import setuptools
 
-VERSION = '0.1' 
+VERSION = '0.1.1' 
 DESCRIPTION = 'DeepMIMOv3'
 LONG_DESCRIPTION = 'DeepMIMOv3 dataset generator library'
 
@@ -14,7 +14,8 @@ setuptools.setup(
         license_files = ('LICENSE.txt', ),
         install_requires=['numpy',
                           'scipy',
-                          'tqdm'
+                          'tqdm',
+                          'matplotlib',
                           ],
         
         keywords=['mmWave', 'MIMO', 'DeepMIMO', 'python', 'Beta'],
