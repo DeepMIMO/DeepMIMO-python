@@ -9,6 +9,7 @@ Date: 12/10/2021
 """
 
 import os
+import copy
 import numpy as np
 
 import DeepMIMOv3.consts as c
@@ -16,12 +17,11 @@ from DeepMIMOv3.construct_deepmimo import generate_MIMO_channel, generate_MIMO_c
 from DeepMIMOv3.utils import safe_print
 from DeepMIMOv3.params import default_params
 
-
-def generate_data(params):
+def generate_data(ext_params):
     
     np.random.seed(1001)
     
-    params = validate_params(params)
+    params = validate_params(copy.deepcopy(ext_params))
     
     # If dynamic scenario
     if is_dynamic_scenario(params):
@@ -99,10 +99,10 @@ def generate_scene_data(params):
 # TODO: Move validation into another script
 def validate_params(params):
 
-    # TODO: Show parameters that are not used in the generation - This allows 
-    # additional_keys = compare_two_params(params, default_params)
-    # print('Following parameters seems unnecessary:')
-    # print(additional_keys)
+    additional_keys = compare_two_dicts(params, default_params())
+    if len(additional_keys):
+        print('The following parameters seem unnecessary:')
+        print(additional_keys)
     
     params['dynamic_scenario'] = is_dynamic_scenario(params)
     if params['dynamic_scenario']:
@@ -258,13 +258,13 @@ def get_scenario_params_path(params):
         
     return params_path
 
-def compare_two_params(params, default_params):
+def compare_two_dicts(dict1, dict2):
     
-    additional_keys = params.keys() - default_params.keys()
-    for key, item in params.items():
+    additional_keys = dict1.keys() - dict2.keys()
+    for key, item in dict1.items():
         if isinstance(item, dict):
-            if key in default_params:
-                additional_keys += compare_two_params(params[key], default_params[key])
+            if key in dict2:
+                additional_keys = additional_keys | compare_two_dicts(dict1[key], dict2[key])
 
     return additional_keys
 
