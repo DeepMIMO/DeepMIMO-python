@@ -5,8 +5,6 @@ import numpy as np
 def plot_LoS_status(bs_location, user_locations, user_LoS, scat_size='auto'):
     LoS_map = {-1: ('r', 'No Path'), 0: ('b', 'NLoS'), 1: ('g', 'LoS')}
     
-    plt.figure(dpi=300)
-    
     # Calculate scatter size based on point density
     if scat_size == 'auto':
         n_points = user_locations.shape[0]
