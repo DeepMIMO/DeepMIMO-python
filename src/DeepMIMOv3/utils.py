@@ -91,9 +91,9 @@ def uniform_sampling(sampling_div, n_rows, users_per_row):
     steps : list
         Step size along x and y dimensions. The list should have 2 elements only.
         Examples:
-        [1,1] = nothing changes
-        [1,2] = same number of users across x, every other user along y. Results: half the users.
-        [2,2] = takes one user every 2 users (step=2), along x and y. Results: 1/4 the users.
+        [1,1] = indices of all users
+        [1,2] = same number of users across x, one every two users along y. Results: half the users.
+        [2,2] = takes one user every 2 users (step=2), along x and y. Results: 1/4 the total users
     n_rows : int
         Number of rows in the generated dataset. Necessary for indexing users.
     users_per_row : int
@@ -101,8 +101,8 @@ def uniform_sampling(sampling_div, n_rows, users_per_row):
         
     Returns
     -------
-    data : DeepMIMO dataset
-        A subsampled dataset where only the number of users changes. 
+    data : list
+        List of undersampled indices.
     """
     cols = np.arange(users_per_row, step=sampling_div[0])
     rows = np.arange(n_rows, step=sampling_div[1])
@@ -127,6 +127,9 @@ def trim_by_idx(dataset, idxs):
     dataset_t : DeepMIMO dataset (dictionary)
         Trimmed dataset.
     """
+    
+    if len(idxs) == dataset[0]['user']['location'].shape[0]:
+        return dataset
     
     dataset_t = []
     for bs_idx in range(len(dataset)):
@@ -210,6 +213,8 @@ class LinearPath():
             if filter_repeated == 'hard':
                 # hard: removes all repeated
                 idxs = np.unique(idxs)
+            
+            self.n = len(idxs)
     
         self.idxs = idxs
         self.pos = dataset_pos[idxs]
