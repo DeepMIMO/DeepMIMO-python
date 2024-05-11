@@ -220,8 +220,3 @@ plot_LoS_status(bs_location, user_locations, LoS_status, bs_title_idx=2)
 
 # %%
 
-
-# %%
-
-
-
