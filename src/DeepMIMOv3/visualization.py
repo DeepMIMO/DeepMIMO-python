@@ -3,13 +3,35 @@ import numpy as np
 
 
 def plot_LoS_status(bs_location, user_locations, user_LoS, scat_size='auto'):
+    """
+    Scatters the users and one basestations and colors the users based on their
+    line-of-sight status.
+
+    Parameters
+    ----------
+    bs_location : numpy array
+        One dimensional array with the xy position of the basestation.
+    user_locations : numpy array
+        A matrix containing user locations across rows and xy positions across
+        columns. Expected shape: <n_users> by 2
+    user_LoS : numpy array
+        One dimensional array with the LoS status of each user. The length
+        should match the number of users in user_locations.
+    scat_size : float, optional
+        Size of the scatter points. The default is 'auto'.
+
+    Returns
+    -------
+    None.
+
+    """
     LoS_map = {-1: ('r', 'No Path'), 0: ('b', 'NLoS'), 1: ('g', 'LoS')}
     
     # Calculate scatter size based on point density
     if scat_size == 'auto':
         n_points = user_locations.shape[0]
         area = np.prod(np.max(user_locations, axis=0)[:2] - 
-                        np.min(user_locations, axis=0)[:2])
+                       np.min(user_locations, axis=0)[:2])
         point_density = n_points / area
         scat_size = 1 / (100 * point_density)
     
@@ -32,9 +54,8 @@ def plot_LoS_status(bs_location, user_locations, user_LoS, scat_size='auto'):
     plt.ylim([user_locations[:, 1].min(), user_locations[:, 1].max()])
 
 
-
 def plot_coverage(rxs, cov_map, dpi=300, figsize=(6,4), cbar_title=None, title=False,
-                  scat_sz=.5, tx_pos=None, tx_ori=None, legend=False, lims=None,
+                  scat_sz=.5, bs_pos=None, bs_ori=None, legend=False, lims=None,
                   proj_3D=False, equal_aspect=False, tight=True, cmap='viridis'):
     """
     This function scatters the users' positions <rxs> and colors them with <cov_map>.
@@ -56,10 +77,10 @@ def plot_coverage(rxs, cov_map, dpi=300, figsize=(6,4), cbar_title=None, title=F
         Title of the plot. No title if None, empty string or False. The default is False.
     scat_sz : float, optional
         Scatter marker size. The default is .5.
-    tx_pos : tuple, list or numpy.ndarray, optional
+    bs_pos : tuple, list or numpy.ndarray, optional
         Transmitter (considered the Base station) position. If valid (not None),
         it puts a 'x' marker in that [x,y (,z)] position. The default is None.
-    tx_ori : tuple, list or numpy.ndarray, optional
+    bs_ori : tuple, list or numpy.ndarray, optional
         Transmitter (considered the Base station) orientation. If valid (not None),
         it draws a line with this direction, starting at the BS position. 
         Orientation/Rotation is around [x,y,z] following the right hand rule. 
@@ -123,17 +144,17 @@ def plot_coverage(rxs, cov_map, dpi=300, figsize=(6,4), cbar_title=None, title=F
     plt.ylabel('y (m)')
     
     # TX position
-    if tx_pos is not None:
-        ax.scatter(*tx_pos[:n], marker='P', c='r', label='TX')
+    if bs_pos is not None:
+        ax.scatter(*bs_pos[:n], marker='P', c='r', label='TX')
     
     # TX orientation
-    if tx_ori is not None and tx_pos is not None:
+    if bs_ori is not None and bs_pos is not None:
         r = 30 # ref size of pointing direction
-        tx_lookat = np.copy(tx_pos)
-        tx_lookat[:2] += r * np.array([np.cos(tx_ori[2]), np.sin(tx_ori[2])]) # azimuth
-        tx_lookat[2] -= r / 10 * np.sin(tx_ori[1]) # elevation
+        tx_lookat = np.copy(bs_pos)
+        tx_lookat[:2] += r * np.array([np.cos(bs_ori[2]), np.sin(bs_ori[2])]) # azimuth
+        tx_lookat[2] -= r / 10 * np.sin(bs_ori[1]) # elevation
         
-        line_components = [[tx_pos[i], tx_lookat[i]] for i in range(n)]
+        line_components = [[bs_pos[i], tx_lookat[i]] for i in range(n)]
         ax.plot(*line_components, c='k', alpha=.5, zorder=3)
         
     if title:
@@ -149,8 +170,8 @@ def plot_coverage(rxs, cov_map, dpi=300, figsize=(6,4), cbar_title=None, title=F
         plt.xlim([mins[0], maxs[0]])
         plt.ylim([mins[1], maxs[1]])
         if proj_3D:
-            zlims = [mins[2], maxs[2]] if tx_pos is None else [np.min([mins[2], tx_pos[2]]),
-                                                               np.max([mins[2], tx_pos[2]])]
+            zlims = [mins[2], maxs[2]] if bs_pos is None else [np.min([mins[2], bs_pos[2]]),
+                                                               np.max([mins[2], bs_pos[2]])]
             ax.axes.set_zlim3d(zlims)
     
     if equal_aspect: # often disrups the plot if in 3D.

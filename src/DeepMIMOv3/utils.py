@@ -13,12 +13,13 @@ import DeepMIMOv3.consts as c
 from DeepMIMOv3.construct_deepmimo import ant_indices, array_response
 import numpy as np
 
+################################# Internal ####################################
+
 # Sleep between print and tqdm displays
 def safe_print(text, stop_dur=0.3):
     print(text)
     time.sleep(stop_dur)
         
-
 # Determine active paths with the given configurations
 # (For OFDM, only the paths within DS are activated)
 class PathVerifier:
@@ -48,6 +49,11 @@ class PathVerifier:
             if self.max_ToA > self.FFT_duration and avg_ratio_FFT >= 1.:
                 safe_print('ToA of some paths of %i channels with an average total power of %.2f%% exceed the useful OFDM symbol duration and are clipped.' % (len(self.path_ratio_FFT), avg_ratio_FFT))
             
+
+
+
+################################## For User ###################################
+
 def dbm2pow(val):
     return 10**(val/10 - 3)
 
@@ -182,11 +188,11 @@ class LinearPath():
         self.last_pos = last_pos
         
         self.dataset = deepmimo_dataset if type(deepmimo_dataset) != list else deepmimo_dataset[0]
-        self.set_idxs_pos_res_steps(res, n_steps, filter_repeated)
-        self.copy_data_from_dataset()
-        self.extract_features()
+        self._set_idxs_pos_res_steps(res, n_steps, filter_repeated)
+        self._copy_data_from_dataset()
+        self._extract_features()
         
-    def set_idxs_pos_res_steps(self, res, n_steps, filter_repeated):
+    def _set_idxs_pos_res_steps(self, res, n_steps, filter_repeated):
         dataset_pos = self.dataset['user']['location']
         if not n_steps:
             data_res = np.linalg.norm(dataset_pos[0] - dataset_pos[1])
@@ -219,7 +225,7 @@ class LinearPath():
         self.idxs = idxs
         self.pos = dataset_pos[idxs]
     
-    def copy_data_from_dataset(self):
+    def _copy_data_from_dataset(self):
         self.feature_names = ['LoS', 'pathloss', 'distance']
         
         self.LoS = self.dataset['user']['LoS'][self.idxs]
@@ -228,7 +234,7 @@ class LinearPath():
         self.paths = self.dataset['user']['paths'][self.idxs]
         self.channel = self.dataset['user']['channel'][self.idxs]
         
-    def extract_features(self):
+    def _extract_features(self):
         # Main path features
         self.path_features = ['DoD_phi', 'DoD_theta', 'DoA_phi', 'DoA_theta', 
                               'ToA', 'phase', 'power']

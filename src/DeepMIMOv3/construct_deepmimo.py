@@ -11,7 +11,6 @@ Date: 12/10/2021
 import DeepMIMOv3.consts as c
 import numpy as np
 from tqdm import tqdm
-import types
 from DeepMIMOv3.ant_patterns import AntennaPattern
 
 # Generates common parameters first. The output is a numpy matrix.
