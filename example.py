@@ -6,46 +6,26 @@
 % Date: 3/19/2022
 """
 
-<<<<<<< HEAD
-# # Import DeepMIMO and other needed libraries for this example
-import DeepMIMO
-=======
 # # Import DeepMIMOv3 and other needed libraries for this example
 import DeepMIMOv3
->>>>>>> DeepMIMOv3-python/main
 import numpy as np
 from pprint import pprint
 import matplotlib.pyplot as plt
 
 #%% Load and print the default parameters
 
-<<<<<<< HEAD
-parameters = DeepMIMO.default_params()
-=======
 parameters = DeepMIMOv3.default_params()
->>>>>>> DeepMIMOv3-python/main
 pprint(parameters, sort_dicts=False)
 
 
 #%% Change parameters for the setup
 
 # Scenario O1_60 extracted at the dataset_folder
-<<<<<<< HEAD
-parameters['scenario'] = 'O1_60'
-parameters['dataset_folder'] = r'.\scenarios'
-
-parameters['num_paths'] = 10
-
-# User rows 1-100
-parameters['user_row_first'] = 1
-parameters['user_row_last'] = 100
-=======
 parameters['scenario'] = 'city_4_phoenix'
 parameters['dataset_folder'] = r'C:\Users\Umt\Desktop\deepverse_scenarios'
 
 parameters['num_paths'] = 10
 
->>>>>>> DeepMIMOv3-python/main
 
 # Activate only the first basestation
 parameters['active_BS'] = np.array([1]) 
@@ -54,27 +34,16 @@ parameters['OFDM']['bandwidth'] = 0.1 # 50 MHz
 parameters['OFDM']['subcarriers'] = 512 # OFDM with 512 subcarriers
 parameters['OFDM']['subcarriers_limit'] = 64 # Keep only first 64 subcarriers
 
-<<<<<<< HEAD
-parameters['ue_antenna']['shape'] = np.array([1, 1, 1]) # Single antenna
-parameters['bs_antenna']['shape'] = np.array([1, 32, 1]) # ULA of 32 elements
-#parameters['bs_antenna']['rotation'] = np.array([0, 30, 90]) # ULA of 32 elements
-parameters['ue_antenna']['rotation'] = np.array([[0, 30], [30, 60], [60, 90]]) # ULA of 32 elements
-=======
 parameters['ue_antenna']['shape'] = np.array([1, 1]) # Single antenna
 parameters['bs_antenna']['shape'] = np.array([32, 1]) # ULA of 32 elements
 #parameters['bs_antenna']['rotation'] = np.array([0, 30, 90]) # ULA of 32 elements
 #parameters['ue_antenna']['rotation'] = np.array([[0, 30], [30, 60], [60, 90]]) # ULA of 32 elements
->>>>>>> DeepMIMOv3-python/main
 #parameters['ue_antenna']['radiation_pattern'] = 'isotropic' 
 #parameters['bs_antenna']['radiation_pattern'] = 'halfwave-dipole' 
 
 
 #%% Generate and inspect the dataset
-<<<<<<< HEAD
-dataset = DeepMIMO.generate_data(parameters)
-=======
 dataset = DeepMIMOv3.generate_data(parameters)
->>>>>>> DeepMIMOv3-python/main
 
 # Number of basestations
 len(dataset)
