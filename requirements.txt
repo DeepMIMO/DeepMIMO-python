@@ -1,3 +1,10 @@
+<<<<<<< HEAD
 numpy==1.19.5
 scipy==1.6.2
 tqdm==4.59.0
+=======
+matplotlib>=3.8.2
+numpy>=1.19.5
+scipy>=1.6.2
+tqdm>=4.59.0
+>>>>>>> DeepMIMOv3-python/main
