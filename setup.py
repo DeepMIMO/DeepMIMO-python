@@ -1,6 +1,6 @@
 import setuptools
 
-VERSION = '3.0.0' 
+VERSION = '0.2.5' 
 DESCRIPTION = 'DeepMIMOv3'
 LONG_DESCRIPTION = 'DeepMIMOv3 dataset generator library'
 

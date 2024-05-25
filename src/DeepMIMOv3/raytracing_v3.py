@@ -83,7 +83,7 @@ def extract_data_from_ray(ray_data, rx_locs, params):
 def load_variables(path_params, path_verifier, params):
     num_max_paths = params[c.PARAMSET_NUM_PATHS]
     user_data = dict()
-    user_data[c.OUT_PATH_NUM] = min(num_mat_paths, path_params.shape[1])
+    user_data[c.OUT_PATH_NUM] = min(num_max_paths, path_params.shape[1])
     user_data[c.OUT_PATH_PHASE] = path_params[0, :num_max_paths]
     user_data[c.OUT_PATH_TOA] = path_params[1, :num_max_paths]
     user_data[c.OUT_PATH_RX_POW] = dbm2pow(path_params[2, :num_max_paths] + 30 - params[c.PARAMSET_SCENARIO_PARAMS][c.PARAMSET_SCENARIO_PARAMS_TX_POW])
