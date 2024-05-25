@@ -33,7 +33,7 @@ def plot_LoS_status(bs_location, user_locations, user_LoS, scat_size='auto'):
         area = np.prod(np.max(user_locations, axis=0)[:2] - 
                        np.min(user_locations, axis=0)[:2])
         point_density = n_points / area
-        scat_size = 1 / (100 * point_density)
+        scat_size = 1 / (3 * point_density)
     
     for unique_LoS_status in LoS_map.keys():
     # Plot different status one by one to assign legend labels
