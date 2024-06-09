@@ -238,7 +238,7 @@ def get_scenario_params_path(params):
             params_path = os.path.join(
                                         os.path.abspath(params[c.PARAMSET_DATASET_FOLDER]), 
                                         params[c.PARAMSET_SCENARIO],
-                                        'scene_' + str(params[c.PARAMSET_DYNAMIC][c.PARAMSET_DYNAMIC_FIRST]-1), # 'scene_i' folder
+                                        'scene_' + str(params[c.PARAMSET_DYNAMIC_SCENES][0]), # 'scene_i' folder
                                         params[c.PARAMSET_SCENARIO] + c.LOAD_FILE_SP_EXT
                                         )
         else:
