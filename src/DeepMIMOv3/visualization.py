@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
+import csv
 
 def plot_LoS_status(bs_location, user_locations, user_LoS, scat_size='auto'):
     """
@@ -33,7 +33,7 @@ def plot_LoS_status(bs_location, user_locations, user_LoS, scat_size='auto'):
         area = np.prod(np.max(user_locations, axis=0)[:2] - 
                        np.min(user_locations, axis=0)[:2])
         point_density = n_points / area
-        scat_size = 1 / (3 * point_density)
+        scat_size = 1 / (100 * point_density)
     
     for unique_LoS_status in LoS_map.keys():
     # Plot different status one by one to assign legend labels
@@ -178,3 +178,82 @@ def plot_coverage(rxs, cov_map, dpi=300, figsize=(6,4), cbar_title=None, title=F
         plt.axis('scaled')
     
     return fig, ax, cbar
+
+
+
+def export_xyz_csv(data, z_var, outfile='', google_earth=False,
+                   lat_min=33.418081, lat_max=33.420961, 
+                   lon_min=-111.932875, lon_max=-111.928567):
+    """
+    Generates a CSV with x,y,z coordinates. This can be used in Blender or, 
+    if selected, in Google Earth, in which case the xy are translated to 
+    geographical coordinates.
+
+    Parameters
+    ----------
+    data : DeepMIMO Dataset
+        DeepMIMO dataset for one basestation. 
+        E.g. data = DeepMIMOv3.generate_data(parameters)[0]
+    z_var : np.ndarray
+        One-dimensional list or numpy array with the values for the z variable
+        which can be used either for heights or color, depending on how the
+        next software used
+    outfile : string, optional
+        Path to the output csv file. The default is ''.
+    google_earth : bool, optional
+        Whether to use the coordinates t. The default is False.
+    lat_min : float, optional
+        Minimum latitude in the user grid - used to translate xy to geographical coordinates. 
+        The default is 33.418081, the one used in ASU Campus 1 scenario.
+    lat_max : float, optional
+        Maximum latitude in the user grid - used to translate xy to geographical coordinates. 
+        The default is 33.420961, the one used in ASU Campus 1 scenario.
+    lon_min : float, optional
+        Minimum longitude in the user grid - used to translate xy to geographical coordinates. 
+        The default is -111.932875, the one used in ASU Campus 1 scenario.
+    lon_max : float, optional
+        Maximum longitude in the user grid - used to translate xy to geographical coordinates. 
+        The default is -111.928567, the one used in ASU Campus 1 scenario.
+
+    Returns
+    -------
+    None.
+    
+    Example usage:
+        
+    export_xyz_csv(data=data, z_var=max_bf_pwr, outfile='test.csv')
+    """
+    user_idxs = np.where(data['user']['LoS'] != -1)[0]
+    
+    locs = data['user']['location'][user_idxs]
+    
+    if google_earth:
+        lats, lons = dt.transform_coordinates(locs, 
+                                              lon_min=lon_min, lon_max=lon_max, 
+                                              lat_min=lat_min, lat_max=lat_max)
+    else:
+        lats, lons = locs[:,0], locs[:,1]
+    
+    # Transform xy to coords and create data dict
+    data_dict = {'latitude'  if google_earth else 'x': lats if google_earth else locs[:,0], 
+                 'longitude' if google_earth else 'y': lons if google_earth else locs[:,1], 
+                 'z': z_var[user_idxs]}
+    
+    if not outfile:
+        outfile = 'test.csv'
+    
+    # Equivalent in pandas (opted out to minimize dependencies.)
+    # pd.DataFrame.from_dict(data_dict).to_csv(outfile, index=False)
+    
+    with open(outfile, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        # Write the header
+        writer.writerow(data_dict.keys())
+        # Write the data rows
+        writer.writerows(zip(*data_dict.values()))
+
+
+
+
+
+
