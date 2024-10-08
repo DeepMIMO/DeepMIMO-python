@@ -105,8 +105,7 @@ def validate_params(params):
         print(additional_keys)
     
     params['dynamic_scenario'] = is_dynamic_scenario(params)
-    if params['dynamic_scenario']:
-        params['user_rows'] = np.array([0])
+    
     params['data_version'] = check_data_version(params)
     params[c.PARAMSET_SCENARIO_PARAMS_PATH] = get_scenario_params_path(params)
     if params['data_version'] == 'v2':
@@ -210,6 +209,10 @@ def find_users_from_rows(params):
     
     grids = params[c.PARAMSET_SCENARIO_PARAMS][c.PARAMSET_SCENARIO_PARAMS_USER_GRIDS]
     rows = params[c.PARAMSET_USER_ROWS]
+    max_grid = grids[:, 1].max()-1
+    min_grid = grids[:, 0].min()-1
+    if np.any(rows > max_grid):
+        raise ValueError(f'The rows are not selected properly. The available rows in this scenario are in [{min_grid}, {max_grid}]')
     
     user_ids = np.array([], dtype=int)
     for row in rows:
