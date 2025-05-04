@@ -1,3 +1,13 @@
+## ⚠️ Archived Repository Notice
+
+**This repository has been archived** and is no longer maintained. It contains Python code for DeepMIMOv2 and DeepMIMOv3.
+
+All future versions are now maintained in the [DeepMIMO Unified Repository](https://github.com/DeepMIMO/DeepMIMO)
+
+DeepMIMOv4 is being developed in this repository and will be made public in May 2025. 
+
+---
+
 # DeepMIMO: A Generic Deep Learning Dataset for Millimeter Wave and Massive MIMO Applications
 This is a python code package of the DeepMIMO dataset generated using [Remcom Wireless InSite](http://www.remcom.com/wireless-insite) software. The [DeepMIMO dataset](https://deepmimo.net/) is a publicly available parameterized dataset published for deep learning applications in mmWave and massive MIMO systems.
 
